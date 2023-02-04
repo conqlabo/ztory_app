@@ -1,4 +1,4 @@
-name: Continuous Integration Flow
+name: CI Without Fastlane
 
 on:
   workflow_call:
@@ -23,7 +23,12 @@ jobs:
       - name: Get Branch name # usefull to know where to deploy
         id: branch
         run: echo  "::set-output name=branch::${GITHUB_REF##*/}"
-    
+      
+      - name: Decrypt Android keys
+        run: sh ./.github/scripts/decrypt_secret.sh
+        env:
+          ANDROID_KEYS_ZIP_PASSPHRASE: ${{ secrets.ANDROID_KEYS_ZIP_PASSPHRASE }}
+      
       - name: Setup Flutter environnment
         uses: subosito/flutter-action@v2
         with:
@@ -55,6 +60,24 @@ jobs:
           name: release-apk
           path: build/app/outputs/apk/release/app-release.apk
 
+      - name: Get Slackwebhook
+        id: slackwebhook
+        uses: haya14busa/action-cond@v1
+        with:
+          cond: ${{ steps.branch.outputs.branch == 'master' }}
+          if_true: ${{ secrets.SLACK_PROD_WEBHOOK }}
+          if_false: ${{ secrets.SLACK_STAGING_WEBHOOK }}
+      
+      - name: Notify on Appropriate Slack Channel
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: ${{ steps.branch.outputs.branch }}
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_TITLE: ✅ Build succeed
+          SLACK_MESSAGE: 🚀 Deployment may start soon..
+          SLACK_USERNAME: ZtoryBot
+          SLACK_WEBHOOK: ${{ steps.slackwebhook.outputs.value }}
+
     
   deploy_android_staging:
     name: Deploy Android Build to Qa Uses
@@ -82,9 +105,9 @@ jobs:
       - name: Upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
-            appId: ${{secrets.APPID}}
-            token: ${{secrets.TOKEN}}
-            groups: qa-users
+            appId: ${{secrets.ANDROID_APPID}}
+            token: ${{secrets.FB_CLI_TOKEN}}
+            groups: qa-team
             file: app-release.apk
 
       - name: Get Slackwebhook
