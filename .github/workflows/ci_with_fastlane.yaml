@@ -74,7 +74,6 @@ jobs:
           SLACK_WEBHOOK: ${{ steps.slackwebhook.outputs.value }}
 
   deploy:
-    if: always()
     name: Deploy Build
     needs: analyze-test-build
     runs-on: macos-latest
@@ -93,9 +92,15 @@ jobs:
             ruby-version: '3.0'
             bundler-cache: true
       
-      - name: Get Branch name # usefull to know where to deploy
-        id: branch
-        run: echo  "::set-output name=branch::${GITHUB_REF##*/}"
+      - name: Setup Java Version
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: "12.x"
+          cache: 'gradle'
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
       
       - name: Get Appropriate Fast Lane
         id: lane

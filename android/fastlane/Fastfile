@@ -40,7 +40,7 @@ platform :android do
   desc "Distribute to Firebase iOS qa-team"
   lane :upload_staging do
       gradle(
-        task: "assemble",
+        task: "bundle",
         build_type: "Release"
       )
       
@@ -50,7 +50,7 @@ platform :android do
         groups: "qa-team",
         release_notes: "Lots of amazing new features to test out!",
         android_artifact_type: "APK",
-        android_artifact_path: "../build/app/outputs/apk/debug/app-debug.apk",
+        android_artifact_path: "../build/app/outputs/apk/debug/app-release.apk",
       )
   end
 
