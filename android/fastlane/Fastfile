@@ -1,0 +1,57 @@
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+
+  desc "Deploy to production"
+  lane :upload_prod do
+      gradle(task: "clean")
+
+      # Get latest (max) version code from several tracks.
+      g = google_play_track_version_codes
+      gb = google_play_track_version_codes(track: "beta")
+      ga = google_play_track_version_codes(track: "alpha")
+      max_value = [g[0].to_i, gb[0].to_i, ga[0].to_i].max
+      version_updated = max_value + 1
+
+      # Incrementing version code automatically with fastlane.
+      increment_version_code(
+        gradle_file_path: "./app/build.gradle", 
+        version_code: version_updated.to_i
+      )
+
+      gradle(
+        task: "bundle",
+        build_type: "Release"
+      )
+
+      upload_to_play_store(
+        aab: "../build/app/outputs/bundle/release/app-release.aab",
+        skip_upload_metadata: true,
+        skip_upload_images: true,
+        skip_upload_screenshots: true,
+        release_status: "draft",
+      )
+  end
+
+
+  desc "Distribute to Firebase iOS qa-team"
+  lane :upload_staging do
+      gradle(
+        task: "assemble",
+        build_type: "Debug"
+      )
+      
+      firebase_app_distribution(
+        app: "1:877450017629:android:a6fc83be07a91ae5e4c6b4",
+        firebase_cli_token: "1//03JT2Sa4V4aFVCgYIARAAGAMSNwF-L9IrChHQgVjWPmXLeEflpjDmBib24poocHPbunII0JmQtIfDG6mstBsE2NOzUUwUs1840Zo",
+        groups: "qa-team",
+        release_notes: "Lots of amazing new features to test out!",
+        android_artifact_type: "APK",
+        android_artifact_path: "../build/app/outputs/apk/debug/app-debug.apk",
+      )
+  end
+
+end

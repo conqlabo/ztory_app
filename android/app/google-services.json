@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "877450017629",
+    "project_id": "ztory-477bd",
+    "storage_bucket": "ztory-477bd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:877450017629:android:a6fc83be07a91ae5e4c6b4",
+        "android_client_info": {
+          "package_name": "com.conqlab.quick_ztory.quick_ztory"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "877450017629-v3371t3ku95mlh1e5e7i1o2837ue0b3v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6U6NBcvh2gu1pIYfOe_9bhAu4jHRXBPc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "877450017629-v3371t3ku95mlh1e5e7i1o2837ue0b3v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

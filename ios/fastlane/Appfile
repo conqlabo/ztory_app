@@ -1,0 +1,8 @@
+app_identifier("com.conqlab.quick_ztory.quick_ztory") # The bundle identifier of your app
+apple_id("paul.alogno@gmail.com") # Your Apple email address
+
+itc_team_id("UNIQUE_TEAM_NUMBER") # App Store Connect Team ID
+team_id("NOTHING_CORRECT") # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile
