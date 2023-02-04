@@ -62,6 +62,7 @@ jobs:
         run: echo  "::set-output name=branch::${GITHUB_REF##*/}"
     
       - name: Get Slackwebhook
+        if: always()
         id: slackwebhook
         uses: haya14busa/action-cond@v1
         with:
@@ -70,6 +71,7 @@ jobs:
           if_false: ${{ secrets.SLACK_STAGING_WEBHOOK }}
       
       - name: Notify on Appropriate Slack Channel
+        if: always()
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_CHANNEL: ${{ steps.branch.outputs.branch }}

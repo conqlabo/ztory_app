@@ -41,7 +41,7 @@ platform :android do
   lane :upload_staging do
       gradle(
         task: "assemble",
-        build_type: "Debug"
+        build_type: "Release"
       )
       
       firebase_app_distribution(

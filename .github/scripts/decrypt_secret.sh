@@ -4,5 +4,5 @@
 gpg --quiet --batch --yes --decrypt --passphrase="$ANDROID_KEYS_ZIP_PASSPHRASE" \
 --output android/key_files.zip android/key_files.zip.gpg && cd android && jar xvf key_files.zip && cd -
 ls -d $PWD/android/*
-mv ./android/keystore.jks ./android/app
+# mv ./android/keystore.jks ./android/app
 # move your file according to path in key.properties
