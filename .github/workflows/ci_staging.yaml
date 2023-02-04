@@ -56,33 +56,6 @@ jobs:
           name: release-apk
           path: build/app/outputs/apk/release/app-release.apk
 
-      - name: Get Slackwebhook
-        id: slackwebhook
-        uses: haya14busa/action-cond@v1
-        with:
-          cond: ${{ steps.branch.outputs.branch == 'main' }}
-          if_true: ${{ secrets.SLACK_PROD_WEBHOOK }}
-          if_false: ${{ secrets.SLACK_STAGING_WEBHOOK }}
-      
-      - name: Notify on Appropriate Slack Channel
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_CHANNEL: ${{ steps.branch.outputs.branch }}
-          SLACK_COLOR: ${{ job.status }}
-          SLACK_TITLE: ✅ Build succeed
-          SLACK_MESSAGE: 🚀 Deployment may start soon..
-          SLACK_USERNAME: ZtoryBot
-          SLACK_WEBHOOK: ${{ steps.slackwebhook.outputs.value }}
-
-    
-  deploy_android_staging:
-    name: Deploy Android Build to Qa Uses
-    needs: analyze-test-build
-    runs-on: macos-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
       - name: Decode google-services.json
         env: 
             GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
@@ -123,3 +96,53 @@ jobs:
           SLACK_MESSAGE: ✅ Deployment done
           SLACK_USERNAME: ZtoryBot
           SLACK_WEBHOOK: ${{ steps.slackwebhook.outputs.value }}
+ 
+ 
+  # deploy_android_staging:
+  #   name: Deploy Android Build to Qa Uses
+  #   needs: analyze-test-build
+  #   runs-on: macos-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+      
+  #     - name: Decode google-services.json
+  #       env: 
+  #           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+  #       run: echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+
+  #     - name: Decode firebase_option
+  #       env:
+  #         firebase_options_dart: ${{secrets.FIREBASE_OPTION}}
+  #       run : echo "$firebase_options_dart" > lib/firebase_options.dart
+
+  #     - name: Get Android Build from artifacts
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: release-apk
+
+  #     - name: Upload artifact to Firebase App Distribution
+  #       uses: wzieba/Firebase-Distribution-Github-Action@v1
+  #       with:
+  #           appId: ${{secrets.ANDROID_APPID}}
+  #           token: ${{secrets.FB_CLI_TOKEN}}
+  #           groups: qa-team
+  #           file: app-release.apk
+
+  #     - name: Get Slackwebhook
+  #       id: slackwebhook
+  #       uses: haya14busa/action-cond@v1
+  #       with:
+  #         cond: ${{ steps.branch.outputs.branch == 'main' }}
+  #         if_true: ${{ secrets.SLACK_PROD_WEBHOOK }}
+  #         if_false: ${{ secrets.SLACK_STAGING_WEBHOOK }}
+      
+  #     - name: Notify on Appropriate Slack Channel
+  #       uses: rtCamp/action-slack-notify@v2
+  #       env:
+  #         SLACK_CHANNEL: ${{ steps.branch.outputs.branch }}
+  #         SLACK_COLOR: ${{ job.status }}
+  #         SLACK_TITLE: New release available
+  #         SLACK_MESSAGE: ✅ Deployment done
+  #         SLACK_USERNAME: ZtoryBot
+  #         SLACK_WEBHOOK: ${{ steps.slackwebhook.outputs.value }}
