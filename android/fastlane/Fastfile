@@ -39,10 +39,10 @@ platform :android do
 
   desc "Distribute to Firebase iOS qa-team"
   lane :upload_staging do
-      gradle(
-        task: "bundle",
-        build_type: "Release"
-      )
+      # gradle(
+      #   task: "bundle",
+      #   build_type: "Release"
+      # )
       
       firebase_app_distribution(
         app: "1:877450017629:android:a6fc83be07a91ae5e4c6b4",
