@@ -83,14 +83,14 @@ jobs:
         id: slackwebhook
         uses: haya14busa/action-cond@v1
         with:
-          cond: ${{ steps.branch.outputs.branch == 'main' }}
+          cond: ${{ github.event.pull_request.base.ref == 'main' }}
           if_true: ${{ secrets.SLACK_PROD_WEBHOOK }}
           if_false: ${{ secrets.SLACK_STAGING_WEBHOOK }}
       
       - name: Notify on Appropriate Slack Channel
         uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_CHANNEL: ${{ steps.branch.outputs.branch }}
+          SLACK_CHANNEL: ${{ github.event.pull_request.base.ref }}
           SLACK_COLOR: ${{ job.status }}
           SLACK_TITLE: New release available
           SLACK_MESSAGE: ✅ Deployment done
