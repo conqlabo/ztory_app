@@ -110,6 +110,12 @@ jobs:
           if_true: upload_prod
           if_false: upload_staging
 
+      - name: Get Android Build from artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: release-apk
+          path: build/app/outputs/apk/release/app-release.apk
+          
       - name: Run Fastlane For Android
         uses: maierj/fastlane-action@v1.4.0
         with:
