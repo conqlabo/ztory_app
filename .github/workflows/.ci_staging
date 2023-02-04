@@ -4,11 +4,11 @@ on:
   workflow_call:
   workflow_dispatch:
   pull_request:
-    branches: [master, staging]
+    branches: [main, staging]
 
 jobs:
   analyze-test-build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -45,7 +45,7 @@ jobs:
         run: flutter test
         
       - name: Build artifacts
-        run: flutter build apk --release
+        run: flutter build apk --release -v
 
       - name: Create github artifact release
         uses: ncipollo/release-action@v1
@@ -64,7 +64,7 @@ jobs:
         id: slackwebhook
         uses: haya14busa/action-cond@v1
         with:
-          cond: ${{ steps.branch.outputs.branch == 'master' }}
+          cond: ${{ steps.branch.outputs.branch == 'main' }}
           if_true: ${{ secrets.SLACK_PROD_WEBHOOK }}
           if_false: ${{ secrets.SLACK_STAGING_WEBHOOK }}
       
@@ -114,7 +114,7 @@ jobs:
         id: slackwebhook
         uses: haya14busa/action-cond@v1
         with:
-          cond: ${{ steps.branch.outputs.branch == 'master' }}
+          cond: ${{ steps.branch.outputs.branch == 'main' }}
           if_true: ${{ secrets.SLACK_PROD_WEBHOOK }}
           if_false: ${{ secrets.SLACK_STAGING_WEBHOOK }}
       
