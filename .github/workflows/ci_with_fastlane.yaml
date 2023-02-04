@@ -55,7 +55,7 @@ jobs:
 
       - name: Get Branch name # usefull to know where to deploy
         id: branch
-        run: echo  "::set-output name=branch::${GITHUB_REF##*/}"
+        run: echo  "::set-output name=branch::${github.event.pull_request.base.ref}"
     
       - name: Get Slackwebhook
         if: always()
