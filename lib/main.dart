@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quick_ztory/core/core.dart';
-import 'package:quick_ztory/widgets/animated_image.dart';
 
-void main() {
-  runApp(const ZtoryApp());
-}
+void main() => runApp(const ZtoryApp());
 
 class ZtoryApp extends StatelessWidget {
   const ZtoryApp({super.key});
@@ -17,13 +14,18 @@ class ZtoryApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(),
+      home: const MyHomePage(title: 'Ztory'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
+
+  final String title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -41,25 +43,30 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [
-          AppColors.primaryColor.withOpacity(.7),
-          AppColors.primaryColor.withOpacity(.3),
-        ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
-      ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SizedBox(
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [
+            AppColors.primaryColor.withOpacity(.7),
+            AppColors.primaryColor.withOpacity(.3),
+          ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+        ),
+        child: SizedBox(
           width: double.infinity,
           child: Column(
             children: [
               SizedBox(height: topPadding),
               const SizedBox(height: 10),
-              AnimatedImage(
-                image: Image.asset(
-                  Assets.cloudsImage,
-                ),
+              Stack(
+                children: [
+                  Image.asset(
+                    Assets.cloudsImage,
+                  ),
+                  Image.asset(
+                    Assets.rocketPersonImage,
+                  ),
+                ],
               ),
               const Spacer(),
               const Text(
@@ -84,13 +91,13 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _incrementCounter,
-          tooltip: 'Increment',
-          backgroundColor: AppColors.primaryColor,
-          child: const Icon(Icons.add),
-        ), //
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        backgroundColor: AppColors.primaryColor,
+        child: const Icon(Icons.add),
+      ), //
     );
   }
 }
