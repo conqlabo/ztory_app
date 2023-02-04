@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               const Spacer(),
               const Text(
-                'You have pushed the button this many times:',
+                'You have pushed the astr*n*t this many times:',
                 style: TextStyle(
                   fontSize: 25,
                   color: Colors.white,
