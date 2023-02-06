@@ -6,6 +6,7 @@ A new Flutter project to demonstrate the using of CI / CD With Flutter.
 
 Main features discussed were:
 
+- Branching Flow
 - Git hooks / (pre-commit & pre-push)
 - Github actions
 - Fastlane
