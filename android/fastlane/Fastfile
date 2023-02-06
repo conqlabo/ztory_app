@@ -1,5 +1,5 @@
 # Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
+update_fastlane
 
 default_platform(:android)
 
@@ -39,10 +39,10 @@ platform :android do
 
   desc "Distribute to Firebase iOS qa-team"
   lane :upload_staging do
-      gradle(
-        task: "assemble",
-        build_type: "Debug"
-      )
+      # gradle(
+      #   task: "bundle",
+      #   build_type: "Release"
+      # )
       
       firebase_app_distribution(
         app: "1:877450017629:android:a6fc83be07a91ae5e4c6b4",
@@ -50,7 +50,7 @@ platform :android do
         groups: "qa-team",
         release_notes: "Lots of amazing new features to test out!",
         android_artifact_type: "APK",
-        android_artifact_path: "../build/app/outputs/apk/debug/app-debug.apk",
+        android_artifact_path: "../build/app/outputs/apk/release/app-release.apk",
       )
   end
 

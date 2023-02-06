@@ -1,27 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:quick_ztory/core/core.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const ZtoryApp());
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ZtoryApp extends StatelessWidget {
+  const ZtoryApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Ztory',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Ztory'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
 
   final String title;
 
@@ -40,29 +42,62 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [
+            AppColors.primaryColor.withOpacity(.7),
+            AppColors.primaryColor.withOpacity(.3),
+          ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            children: [
+              SizedBox(height: topPadding),
+              const SizedBox(height: 10),
+              Stack(
+                children: [
+                  Image.asset(
+                    Assets.cloudsImage,
+                  ),
+                  Image.asset(
+                    Assets.rocketPersonImage,
+                  ),
+                ],
+              ),
+              const Spacer(),
+              const Text(
+                'You have pushed the astr*n*t this many times:',
+                style: TextStyle(
+                  fontSize: 25,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                '$_counter',
+                style: const TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 200),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
+        backgroundColor: AppColors.primaryColor,
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ), //
     );
   }
 }

@@ -1,4 +1,5 @@
-name: CI Without Fastlane
+name: CI With Fastlane
+
 
 on:
   workflow_call:
@@ -22,15 +23,11 @@ jobs:
           java-version: "12.x"
           cache: 'gradle'
       
-      - name: Get Branch name # usefull to know where to deploy
-        id: branch
-        run: echo  "::set-output name=branch::${GITHUB_REF##*/}"
-      
       - name: Decrypt Android keys
         run: sh ./.github/scripts/decrypt_secret.sh
         env:
           ANDROID_KEYS_ZIP_PASSPHRASE: ${{ secrets.ANDROID_KEYS_ZIP_PASSPHRASE }}
-      
+     
       - name: Setup Flutter environnment
         uses: subosito/flutter-action@v2
         with:
@@ -56,38 +53,41 @@ jobs:
           name: release-apk
           path: build/app/outputs/apk/release/app-release.apk
 
-      - name: Decode google-services.json
-        env: 
-            GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
-
-      - name: Decode firebase_option
-        env:
-          firebase_options_dart: ${{secrets.FIREBASE_OPTION}}
-        run : echo "$firebase_options_dart" > lib/firebase_options.dart
-
-      - name: Get Android Build from artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: release-apk
-
-      - name: Upload artifact to Firebase App Distribution
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-            appId: ${{secrets.ANDROID_APPID}}
-            token: ${{secrets.FB_CLI_TOKEN}}
-            groups: qa-team
-            file: app-release.apk
-
       - name: Get Slackwebhook
+        if: always()
         id: slackwebhook
         uses: haya14busa/action-cond@v1
         with:
-          cond: ${{ github.event.pull_request.base.ref == 'main' }}
+          cond: ${{ steps.branch.outputs.branch == 'master' }}
           if_true: ${{ secrets.SLACK_PROD_WEBHOOK }}
           if_false: ${{ secrets.SLACK_STAGING_WEBHOOK }}
       
       - name: Notify on Appropriate Slack Channel
+        if: always()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: ${{ steps.branch.outputs.branch }}
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_TITLE: ✅ Build succeed
+          SLACK_MESSAGE: 🚀 Deployment may start soon..
+          SLACK_USERNAME: ZtoryBot
+          SLACK_WEBHOOK: ${{ steps.slackwebhook.outputs.value }}
+
+      - name: Get Appropriate Fast Lane
+        id: lane
+        uses: haya14busa/action-cond@v1
+        with:
+          cond: ${{ github.event.pull_request.base.ref == 'main' }}
+          if_true: upload_prod
+          if_false: upload_staging
+       
+      - name: Run Fastlane For Android
+        uses: maierj/fastlane-action@v1.4.0
+        with:
+          lane: ${{ steps.lane.outputs.value }}
+          subdirectory: android
+
+      - name: Notify on Release Slack Channel
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_CHANNEL: ${{ github.event.pull_request.base.ref }}
@@ -96,40 +96,58 @@ jobs:
           SLACK_MESSAGE: ✅ Deployment done
           SLACK_USERNAME: ZtoryBot
           SLACK_WEBHOOK: ${{ steps.slackwebhook.outputs.value }}
- 
- 
-  # deploy_android_staging:
-  #   name: Deploy Android Build to Qa Uses
+
+  # deploy:
+  #   name: Deploy Build
   #   needs: analyze-test-build
   #   runs-on: macos-latest
   #   steps:
   #     - name: Checkout code
   #       uses: actions/checkout@v3
       
-  #     - name: Decode google-services.json
-  #       env: 
-  #           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-  #       run: echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
-
-  #     - name: Decode firebase_option
+  #     - name: Decrypt Android keys
+  #       run: sh ./.github/scripts/decrypt_secret.sh
   #       env:
-  #         firebase_options_dart: ${{secrets.FIREBASE_OPTION}}
-  #       run : echo "$firebase_options_dart" > lib/firebase_options.dart
-
-  #     - name: Get Android Build from artifacts
-  #       uses: actions/download-artifact@v2
+  #         ANDROID_KEYS_ZIP_PASSPHRASE: ${{ secrets.ANDROID_KEYS_ZIP_PASSPHRASE }}
+     
+  #     - name: Setup Ruby for fastlan
+  #       uses: ruby/setup-ruby@v1
   #       with:
-  #         name: release-apk
-
-  #     - name: Upload artifact to Firebase App Distribution
-  #       uses: wzieba/Firebase-Distribution-Github-Action@v1
+  #           ruby-version: '3.0'
+  #           bundler-cache: true
+      
+  #     - name: Setup Java Version
+  #       uses: actions/setup-java@v3
   #       with:
-  #           appId: ${{secrets.ANDROID_APPID}}
-  #           token: ${{secrets.FB_CLI_TOKEN}}
-  #           groups: qa-team
-  #           file: app-release.apk
+  #         distribution: 'zulu'
+  #         java-version: "12.x"
+  #         cache: 'gradle'
+
+  #     - name: Setup Gradle
+  #       uses: gradle/gradle-build-action@v2
+      
+  #     - name: Get Appropriate Fast Lane
+  #       id: lane
+  #       uses: haya14busa/action-cond@v1
+  #       with:
+  #         cond: ${{ github.event.pull_request.base.ref == 'main' }}
+  #         if_true: upload_prod
+  #         if_false: upload_staging
+       
+  #     - name: Run Fastlane For Android
+  #       uses: maierj/fastlane-action@v1.4.0
+  #       with:
+  #         lane: ${{ steps.lane.outputs.value }}
+  #         subdirectory: android
+
+  #     - name: Run Fastlane For iOS
+  #       uses: maierj/fastlane-action@v1.4.0
+  #       with:
+  #         lane: ${{ steps.lane.outputs.value }}
+  #         subdirectory: ios
 
   #     - name: Get Slackwebhook
+  #       if: always()
   #       id: slackwebhook
   #       uses: haya14busa/action-cond@v1
   #       with:
@@ -138,9 +156,10 @@ jobs:
   #         if_false: ${{ secrets.SLACK_STAGING_WEBHOOK }}
       
   #     - name: Notify on Appropriate Slack Channel
+  #       if: always()
   #       uses: rtCamp/action-slack-notify@v2
   #       env:
-  #         SLACK_CHANNEL: ${{ steps.branch.outputs.branch }}
+  #         SLACK_CHANNEL: ${{ github.event.pull_request.base.ref }}
   #         SLACK_COLOR: ${{ job.status }}
   #         SLACK_TITLE: New release available
   #         SLACK_MESSAGE: ✅ Deployment done

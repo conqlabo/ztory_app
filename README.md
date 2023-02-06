@@ -1,16 +1,14 @@
 # quick_ztory
 
-A new Flutter project.
+A new Flutter project to demonstrate the using of CI / CD With Flutter.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+Main features discussed were:
 
-A few resources to get you started if this is your first Flutter project:
+- Branching Flow
+- Git hooks / (pre-commit & pre-push)
+- Github actions
+- Fastlane
+- Firebase App Distribution
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
